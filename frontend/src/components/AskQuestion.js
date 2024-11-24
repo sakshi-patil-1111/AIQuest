@@ -56,40 +56,71 @@ function AskQuestion() {
   };
 
   return (
-    <div>
-      <h1>Ask a Question</h1>
-      {!isLoggedIn && <p>You must be logged in to post a question.</p>}
+    <div className="w-full h-screen bg-black flex items-center justify-center">
+      <div className="w-full max-w-3xl p-6 bg-gray-900 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-semibold text-white mb-6">
+          Ask a Question
+        </h1>
+        {!isLoggedIn && (
+          <p className="text-sm text-red-400">
+            You must be logged in to post a question.
+          </p>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        ></textarea>
-        <input
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Tags (comma-separated)"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-        />
-        <button type="submit" disabled={!isLoggedIn}>
-          Post Question
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <input
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-600 text-white"
+            />
+          </div>
+
+          <div>
+            <textarea
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              rows={5}
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-600 text-white"
+            ></textarea>
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-600 text-white"
+            />
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Tags (comma-separated)"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-600 text-white"
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={!isLoggedIn}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              Post Question
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

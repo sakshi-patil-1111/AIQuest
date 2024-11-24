@@ -7,34 +7,31 @@ function QuestionDetails() {
   const [question, setQuestion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [newAnswer, setNewAnswer] = useState("");
-  const [userId, setUserId] = useState(null); // To store the current user's ID
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if the user is logged in
-  const [aiSuggestedAnswer, setAiSuggestedAnswer] = useState(null); // For AI-suggested answer
+  const [userId, setUserId] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [aiSuggestedAnswer, setAiSuggestedAnswer] = useState(null);
 
   useEffect(() => {
-    // Fetch the question details
+    // Fetch question, answers, and AI suggested answer
     axios
       .get(`http://127.0.0.1:5000/questions/${id}`)
       .then((res) => setQuestion(res.data))
       .catch((err) => console.error(err));
 
-    // Fetch the answers for the question
     axios
       .get(`http://127.0.0.1:5000/questions/${id}/answers`)
       .then((res) => setAnswers(res.data))
       .catch((err) => console.error(err));
 
-    // Fetch AI suggested answer for the question
     axios
       .get(`http://127.0.0.1:5000/questions/${id}/ai-answer`)
       .then((res) => setAiSuggestedAnswer(res.data))
       .catch((err) => console.error(err));
 
-    // Check if the user is logged in and fetch the user ID from the JWT token
     const token = localStorage.getItem("access_token");
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split(".")[1])); // Decode JWT token
-      setUserId(decodedToken.sub); // assuming 'sub' is the user ID from JWT payload
+      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      setUserId(decodedToken.sub);
       setIsLoggedIn(true);
     }
   }, [id]);
@@ -72,7 +69,6 @@ function QuestionDetails() {
       })
       .then(() => {
         setNewAnswer("");
-        // Fetch answers again
         axios
           .get(`http://127.0.0.1:5000/questions/${id}/answers`)
           .then((res) => setAnswers(res.data));
@@ -94,65 +90,89 @@ function QuestionDetails() {
   if (!question) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>{question.title}</h1>
-      <p>{question.description}</p>
-      <p>
-        <strong>Posted by: </strong>@{question.posted_by}{" "}
-      </p>
-      <div>
-        <strong>Category:</strong> {question.category} <br />
-        <strong>Tags:</strong> {question.tags.join(", ")}
-      </div>
-
-      {/* AI Suggested Answer Section */}
-      {aiSuggestedAnswer && (
-        <div
-          style={{
-            border: "1px solid #ddd",
-            margin: "10px",
-            padding: "10px",
-            backgroundColor: "#f9f9f9",
-          }}
-        >
-          <h4>AI Suggested Answer</h4>
-          <p>{aiSuggestedAnswer.ai_answer}</p>
+    <div className="w-full h-screen bg-black flex items-center justify-center">
+      <div className="w-4xl mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-lg">
+        <h1 className="text-3xl font-semibold mb-4">{question.title}</h1>
+        <p className="text-lg mb-4">{question.description}</p>
+        <p className="text-sm text-gray-400">
+          <strong>Posted by:</strong> @{question.posted_by}
+        </p>
+        <div className="text-sm text-gray-400 mt-2">
+          <strong>Category:</strong> {question.category} <br />
+          <strong>Tags:</strong> {question.tags.join(", ")}
         </div>
-      )}
 
-      <h3>Answers</h3>
-      {answers.map((ans) => (
-        <div
-          key={ans.id}
-          style={{ border: "1px solid #ccc", margin: "10px", padding: "10px" }}
-        >
-          <p>{ans.content}</p>
-          <div>
-            <button onClick={() => handleVote(ans.id, "upvote")}>Upvote</button>
-            <button onClick={() => handleVote(ans.id, "downvote")}>
-              Downvote
-            </button>
-            <span>Votes: {ans.net_votes}</span>
-            {/* Only show delete button if the current user is the author of the answer */}
-            {ans.user_id === userId && (
-              <button onClick={() => handleDeleteAnswer(ans.id)}>Delete</button>
-            )}
+        {/* AI Suggested Answer Section */}
+        {aiSuggestedAnswer && (
+          <div className="bg-gray-900 p-4 mt-6 rounded-lg shadow-md">
+            <h4 className="text-xl font-semibold mb-2">AI Suggested Answer</h4>
+            <p>{aiSuggestedAnswer.ai_answer}</p>
           </div>
-        </div>
-      ))}
-      {isLoggedIn && (
-        <>
-          <h4>Add Your Answer</h4>
-          <textarea
-            value={newAnswer}
-            onChange={(e) => setNewAnswer(e.target.value)}
-            rows="4"
-            cols="50"
-          />
-          <button onClick={handleAddAnswer}>Submit</button>
-        </>
-      )}
-      {!isLoggedIn && <p>You need to be logged in to post an answer.</p>}
+        )}
+
+        <h3 className="text-2xl font-semibold mt-8 mb-4">Answers</h3>
+        {answers.map((ans) => (
+          <div
+            key={ans.id}
+            className="border p-4 mb-4 rounded-lg shadow-md bg-gray-900"
+          >
+            <p className="text-lg">{ans.content}</p>
+            <div className="flex items-center space-x-4 mt-2">
+              <button
+                className="bg-blue-500 text-white py-1 px-4 rounded-lg"
+                onClick={() => handleVote(ans.id, "upvote")}
+              >
+                Upvote
+              </button>
+              <button
+                className="bg-red-500 text-white py-1 px-4 rounded-lg"
+                onClick={() => handleVote(ans.id, "downvote")}
+              >
+                Downvote
+              </button>
+              <span className="text-sm text-gray-400">
+                Votes: {ans.net_votes}
+              </span>
+              {ans.user_id === userId && (
+                <button
+                  className="text-red-500 hover:underline"
+                  onClick={() => handleDeleteAnswer(ans.id)}
+                >
+                  Delete
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {isLoggedIn && (
+          <>
+            <h4 className="text-2xl font-semibold mt-8 mb-4">
+              Add Your Answer
+            </h4>
+            <textarea
+              value={newAnswer}
+              onChange={(e) => setNewAnswer(e.target.value)}
+              rows="4"
+              cols="50"
+              className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white"
+              placeholder="Write your answer here..."
+            />
+            <button
+              className="bg-green-500 text-white py-2 px-6 mt-4 rounded-lg"
+              onClick={handleAddAnswer}
+            >
+              Submit Answer
+            </button>
+          </>
+        )}
+
+        {!isLoggedIn && (
+          <p className="mt-4 text-sm text-gray-400">
+            You need to be logged in to post an answer.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

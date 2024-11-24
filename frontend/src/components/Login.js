@@ -16,7 +16,6 @@ function Login() {
         console.log("Axios Response:", response);
         localStorage.setItem("access_token", response.data.access_token);
         navigate("/"); // Navigate to the dashboard or homepage
-        console.log("object");
         console.log("Redirected");
       })
       .catch((err) => {
@@ -26,26 +25,49 @@ function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-        {error && <p>{error}</p>}
-      </form>
+    <div className="w-full h-screen bg-black flex items-center justify-center">
+      <div className="w-full max-w-sm p-8 bg-gray-900 rounded-lg shadow-lg">
+        <h2 className="text-3xl font-semibold text-white mb-6 text-center">
+          Login
+        </h2>
+
+        {error && (
+          <p className="text-sm text-red-400 text-center mb-4">{error}</p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-600 text-white"
+            />
+          </div>
+
+          <div>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-600 text-white"
+            />
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

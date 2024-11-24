@@ -174,6 +174,7 @@ def vote_answer():
 
 
 @app.route('/questions/<question_id>/answers', methods=['POST'])
+@jwt_required()
 def post_answer(question_id):
     data = request.json
     current_user_id = get_jwt_identity()
