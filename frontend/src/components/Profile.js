@@ -7,7 +7,7 @@ function Profile() {
   const [userAnswers, setUserAnswers] = useState([]);
   const [username, setUsername] = useState(""); // Add state for username
   const [error, setError] = useState(null);
-  const history = useNavigate();
+  const navigate = useNavigate(); // useNavigate hook
 
   useEffect(() => {
     // Fetch profile data from the backend
@@ -25,9 +25,9 @@ function Profile() {
       .catch((err) => {
         setError("Failed to load profile. Please log in again.");
         console.error("Error fetching profile data:", err);
-        history("/login"); // Redirect to login if not authorized
+        navigate("/login"); // Redirect to login if not authorized
       });
-  }, [history]);
+  }, [navigate]);
 
   return (
     <div className="bg-gray-800 min-h-screen py-10 px-6">
@@ -52,7 +52,8 @@ function Profile() {
               {userQuestions.map((question) => (
                 <div
                   key={question.id}
-                  className="bg-gray-900/50 border border-blue-900/20 rounded-xl p-6 hover:border-blue-600/30 transition-all duration-300"
+                  className="bg-gray-900/50 border border-blue-900/20 rounded-xl p-6 hover:border-blue-600/30 transition-all duration-300 cursor-pointer"
+                  onClick={() => navigate(`/questions/${question.id}`)} // Redirect to the question page
                 >
                   <h3 className="text-xl font-bold text-white">
                     {question.title}
@@ -78,7 +79,8 @@ function Profile() {
               {userAnswers.map((answer) => (
                 <div
                   key={answer.id}
-                  className="bg-gray-900/50 border border-green-900/20 rounded-xl p-6 hover:border-green-600/30 transition-all duration-300"
+                  className="bg-gray-900/50 border border-green-900/20 rounded-xl p-6 hover:border-green-600/30 transition-all duration-300 cursor-pointer"
+                  onClick={() => navigate(`/questions/${answer.question_id}`)} // Redirect to the question page
                 >
                   <p className="text-lg font-semibold text-white">
                     Answer to Question ID: {answer.question_id}

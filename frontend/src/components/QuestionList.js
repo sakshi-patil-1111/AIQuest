@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { ThumbsUp, ThumbsDown, MessageCircle, Eye } from "lucide-react";
+import { MessageCircle, PlusCircle } from "lucide-react";
 
 function QuestionList() {
   const [questions, setQuestions] = useState([]);
@@ -31,7 +31,13 @@ function QuestionList() {
               .includes(e.target.value.toLowerCase()) ||
             question.description
               .toLowerCase()
-              .includes(e.target.value.toLowerCase())
+              .includes(e.target.value.toLowerCase()) ||
+            question.category
+              ?.toLowerCase()
+              .includes(e.target.value.toLowerCase()) || // Check category
+            question.tags.some(
+              (tag) => tag.toLowerCase().includes(e.target.value.toLowerCase()) // Check tags
+            )
         )
       );
     }
@@ -40,23 +46,15 @@ function QuestionList() {
   return (
     <div className="bg-gray-800 min-h-screen py-10 px-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-white mb-6">Questions</h1>
-
-        {/* Ask a Question Link */}
-        <div className="mb-6">
-          <Link
-            to="/ask"
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg"
-          >
-            Ask a Question
-          </Link>
-        </div>
+        <h1 className="text-4xl font-bold text-white mb-6 text-center">
+          Questions
+        </h1>
 
         {/* Search Bar */}
         <div className="mb-8 max-w-lg mx-auto">
           <input
             type="text"
-            placeholder="Search questions..."
+            placeholder="Search questions by title, description, category, or tags..."
             value={searchQuery}
             onChange={handleSearch}
             className="w-full bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -71,19 +69,6 @@ function QuestionList() {
               className="bg-gray-900/50 border border-blue-900/20 rounded-xl p-6 hover:border-blue-600/30 transition-all duration-300"
             >
               <div className="flex items-start space-x-4">
-                {/* Votes Section */}
-                <div className="flex flex-col items-center space-y-2">
-                  <button className="p-2 rounded-lg hover:bg-blue-600/10 text-gray-400 hover:text-blue-400">
-                    <ThumbsUp className="w-5 h-5" />
-                  </button>
-                  <span className="text-lg font-semibold text-gray-300">
-                    {question.votes}
-                  </span>
-                  <button className="p-2 rounded-lg hover:bg-red-600/10 text-gray-400 hover:text-red-400">
-                    <ThumbsDown className="w-5 h-5" />
-                  </button>
-                </div>
-
                 {/* Question Content */}
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
@@ -111,7 +96,7 @@ function QuestionList() {
                     <div className="flex items-center space-x-4 text-sm text-gray-400">
                       <span className="flex items-center">
                         <MessageCircle className="w-4 h-4 mr-1" />
-                        {question.answers} answers
+                        {question.no_of_ans} answers
                       </span>
                     </div>
 
@@ -130,6 +115,15 @@ function QuestionList() {
           ))}
         </div>
       </div>
+
+      {/* Floating "Ask Question" Button */}
+      <Link
+        to="/ask"
+        className="fixed bottom-8 right-8 flex items-center px-6 py-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors duration-200 group"
+      >
+        <PlusCircle className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-200" />
+        <span className="font-semibold">Ask Question</span>
+      </Link>
     </div>
   );
 }

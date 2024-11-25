@@ -91,7 +91,7 @@ def login():
 def post_question():
     current_user_id = get_jwt_identity()
     print(current_user_id)
-    data = request.json
+    data = request.get__json
     question = {
         'title': data['title'],
         'description': data['description'],
@@ -111,6 +111,7 @@ def get_questions():
     for q in all_questions:
         # Fetch user details using the user_id from the question
         user = users.find_one({'_id': ObjectId(q['user_id'])})
+        num_of_answers = answers.count_documents({'question_id': str(q['_id'])})
         
         # Add question details to result list, including the 'posted_by' field
         result.append({
@@ -120,6 +121,7 @@ def get_questions():
             'category': q.get('category', ''),
             'tags': q.get('tags', []),
             'posted_by': user['username'] if user else 'Unknown',  # Add posted_by field
+            'no_of_ans': num_of_answers
         })
     
     return jsonify(result), 200
@@ -176,20 +178,24 @@ def vote_answer():
 @app.route('/questions/<question_id>/answers', methods=['POST'])
 @jwt_required()
 def post_answer(question_id):
-    data = request.json
-    current_user_id = get_jwt_identity()
-    answer = {
-        'question_id': question_id,
-        'content': data['content'],
-        'user_id': current_user_id,
-        'is_official': data.get('is_official', False),
-        'is_ai_generated': data.get('is_ai_generated', False),
-        'upvotes': 0,
-        'downvotes': 0,
-        'net_votes': 0
-    }
-    result = answers.insert_one(answer)
-    return jsonify({'message': 'Answer posted successfully', 'id': str(result.inserted_id)}), 201
+    try:
+        data = request.get_json()
+        print(data)
+        current_user_id = get_jwt_identity()
+        answer = {
+            'question_id': question_id,
+            'content': data['content'],
+            'user_id': current_user_id,
+            'is_official': False,
+            'is_ai_generated': False,
+            'upvotes': 0,
+            'downvotes': 0,
+            'net_votes': 0
+        }
+        result = answers.insert_one(answer)
+        return jsonify({'message': 'Answer posted successfully', 'id': str(result.inserted_id)}), 201
+    except Exception as e:
+        print(e)
 
 @app.route('/answers/<answer_id>', methods=['DELETE'])
 @jwt_required()
@@ -246,6 +252,7 @@ def profile():
             'description': q['description'],
             'category': q.get('category', ''),
             'tags': q.get('tags', []),
+            'no_of_answers': answers.count_documents({'question_id': q['_id']}) 
         }
         for q in user_questions
     ]

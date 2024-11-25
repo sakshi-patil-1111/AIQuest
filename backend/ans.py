@@ -11,8 +11,8 @@ import numpy as np
 from flask_cors import CORS
 
 # Set proxy environment variables
-os.environ['HTTP_PROXY'] = 'http://edcguest:edcguest@172.31.100.25:3128'
-os.environ['HTTPS_PROXY'] = 'http://edcguest:edcguest@172.31.100.25:3128'
+# os.environ['HTTP_PROXY'] = 'http://edcguest:edcguest@172.31.100.25:3128'
+# os.environ['HTTPS_PROXY'] = 'http://edcguest:edcguest@172.31.100.25:3128'
 
 # Initialize Flask app
 app = Flask(__name__)

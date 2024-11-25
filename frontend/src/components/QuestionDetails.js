@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 
 function QuestionDetails() {
   const { id } = useParams();
@@ -63,10 +64,17 @@ function QuestionDetails() {
       return;
     }
 
+    const token = localStorage.getItem("access_token");
     axios
-      .post(`http://127.0.0.1:5000/questions/${id}/answers`, {
-        content: newAnswer,
-      })
+      .post(
+        `http://127.0.0.1:5000/questions/${id}/answers`,
+        { content: newAnswer },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then(() => {
         setNewAnswer("");
         axios
@@ -90,8 +98,8 @@ function QuestionDetails() {
   if (!question) return <div>Loading...</div>;
 
   return (
-    <div className="w-full h-screen bg-black flex items-center justify-center">
-      <div className="w-4xl mx-auto p-6 bg-gray-800 text-white rounded-lg shadow-lg">
+    <div className="w-full min-h-screen bg-black flex items-center justify-center p-12">
+      <div className="max-w-3xl w-full mx-4 p-6 bg-gray-800 text-white rounded-lg shadow-lg overflow-y-auto ">
         <h1 className="text-3xl font-semibold mb-4">{question.title}</h1>
         <p className="text-lg mb-4">{question.description}</p>
         <p className="text-sm text-gray-400">
@@ -114,28 +122,32 @@ function QuestionDetails() {
         {answers.map((ans) => (
           <div
             key={ans.id}
-            className="border p-4 mb-4 rounded-lg shadow-md bg-gray-900"
+            className="border p-4 mb-4 rounded-lg shadow-md bg-gray-900 flex items-start"
           >
-            <p className="text-lg">{ans.content}</p>
-            <div className="flex items-center space-x-4 mt-2">
+            {/* Voting Section */}
+            <div className="flex flex-col items-center space-y-2 mr-4">
               <button
-                className="bg-blue-500 text-white py-1 px-4 rounded-lg"
+                className="p-2 rounded-lg hover:bg-blue-600/10 text-gray-400 hover:text-blue-400"
                 onClick={() => handleVote(ans.id, "upvote")}
               >
-                Upvote
+                <ThumbsUp className="w-5 h-5" />
               </button>
+              <span className="text-lg font-semibold text-gray-300">
+                {ans.net_votes}
+              </span>
               <button
-                className="bg-red-500 text-white py-1 px-4 rounded-lg"
+                className="p-2 rounded-lg hover:bg-red-600/10 text-gray-400 hover:text-red-400"
                 onClick={() => handleVote(ans.id, "downvote")}
               >
-                Downvote
+                <ThumbsDown className="w-5 h-5" />
               </button>
-              <span className="text-sm text-gray-400">
-                Votes: {ans.net_votes}
-              </span>
+            </div>
+            {/* Answer Content Section */}
+            <div className="flex-1 pt-10">
+              <p className="text-lg">{ans.content}</p>
               {ans.user_id === userId && (
                 <button
-                  className="text-red-500 hover:underline"
+                  className="text-red-500 hover:underline mt-2 block"
                   onClick={() => handleDeleteAnswer(ans.id)}
                 >
                   Delete
@@ -145,7 +157,7 @@ function QuestionDetails() {
           </div>
         ))}
 
-        {isLoggedIn && (
+        {isLoggedIn ? (
           <>
             <h4 className="text-2xl font-semibold mt-8 mb-4">
               Add Your Answer
@@ -154,20 +166,17 @@ function QuestionDetails() {
               value={newAnswer}
               onChange={(e) => setNewAnswer(e.target.value)}
               rows="4"
-              cols="50"
               className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white"
               placeholder="Write your answer here..."
             />
             <button
-              className="bg-green-500 text-white py-2 px-6 mt-4 rounded-lg"
+              className="bg-blue-600 text-white py-2 px-6 mt-4 rounded-lg"
               onClick={handleAddAnswer}
             >
               Submit Answer
             </button>
           </>
-        )}
-
-        {!isLoggedIn && (
+        ) : (
           <p className="mt-4 text-sm text-gray-400">
             You need to be logged in to post an answer.
           </p>
