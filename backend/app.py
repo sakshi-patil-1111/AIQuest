@@ -9,7 +9,7 @@ from bson import ObjectId
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend-backend interaction
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/qna_platform'  # MongoDB URI
-app.config['JWT_SECRET_KEY'] = 'your_secret_key'
+app.config['JWT_SECRET_KEY'] = 'secret_key'
 
 mongo = PyMongo(app)
 jwt = JWTManager(app)
@@ -18,7 +18,6 @@ jwt = JWTManager(app)
 users = mongo.db.users
 questions = mongo.db.questions
 answers = mongo.db.answers
-votes = mongo.db.votes
 
 
 # User model: Store users in MongoDB
@@ -90,8 +89,8 @@ def login():
 @jwt_required()
 def post_question():
     current_user_id = get_jwt_identity()
-    print(current_user_id)
-    data = request.get__json
+    data = request.get_json()
+    print(data)
     question = {
         'title': data['title'],
         'description': data['description'],
